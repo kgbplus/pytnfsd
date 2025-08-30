@@ -662,7 +662,11 @@ class TNFSDaemon:
 
             # Read data
             data_read = os.read(session.fd[fd_index], min(size, MAX_IOSZ))
-            
+
+            if not data_read:
+                self.send_error(session, header, TNFS_ERROR.EOF)
+                return None
+
             # Send response with data
             response_data = struct.pack('<H', len(data_read)) + data_read
             response_header = TNFSHeader(sid=session.sid, seqno=header.seqno, cmd=header.cmd, status=TNFS_ERROR.SUCCESS)
